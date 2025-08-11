@@ -3,6 +3,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { BookOpen, Users, Award, Globe, ChevronRight, MessageCircle } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import heroImage from '@/assets/hero-bg.jpg';
+import ChatbotWidget from '@/components/ChatbotWidget';
 
 const Home = () => {
   const features = [
@@ -210,6 +211,9 @@ const Home = () => {
           </div>
         </div>
       </section>
+
+      {/* Chatbot Widget */}
+      <ChatbotWidget />
     </div>
   );
 };
