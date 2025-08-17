@@ -1,12 +1,14 @@
 import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
-import { Menu, X } from 'lucide-react';
+import { Menu, X, LogOut } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
+import { useAuth } from '@/hooks/useAuth';
 
 const Header = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const location = useLocation();
+  const { user, signOut } = useAuth();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -63,12 +65,26 @@ const Header = () => {
           </nav>
 
           <div className="hidden md:flex items-center space-x-4">
-            <Button variant="outline" size="sm">
-              Login
-            </Button>
-            <Button className="btn-primary" size="sm">
-              Apply Now
-            </Button>
+            {user ? (
+              <>
+                <span className="text-sm text-muted-foreground">
+                  {user.email}
+                </span>
+                <Button variant="outline" size="sm" onClick={signOut}>
+                  <LogOut className="h-4 w-4 mr-2" />
+                  Logout
+                </Button>
+              </>
+            ) : (
+              <>
+                <Button variant="outline" size="sm" asChild>
+                  <Link to="/auth">Login</Link>
+                </Button>
+                <Button className="btn-primary" size="sm" asChild>
+                  <Link to="/auth">Apply Now</Link>
+                </Button>
+              </>
+            )}
           </div>
 
           {/* Mobile menu button */}
@@ -101,12 +117,26 @@ const Header = () => {
                 </Link>
               ))}
               <div className="pt-4 flex flex-col space-y-2">
-                <Button variant="outline" size="sm">
-                  Login
-                </Button>
-                <Button className="btn-primary" size="sm">
-                  Apply Now
-                </Button>
+                {user ? (
+                  <>
+                    <span className="text-sm text-muted-foreground px-3">
+                      {user.email}
+                    </span>
+                    <Button variant="outline" size="sm" onClick={signOut}>
+                      <LogOut className="h-4 w-4 mr-2" />
+                      Logout
+                    </Button>
+                  </>
+                ) : (
+                  <>
+                    <Button variant="outline" size="sm" asChild>
+                      <Link to="/auth">Login</Link>
+                    </Button>
+                    <Button className="btn-primary" size="sm" asChild>
+                      <Link to="/auth">Apply Now</Link>
+                    </Button>
+                  </>
+                )}
               </div>
             </div>
           </div>

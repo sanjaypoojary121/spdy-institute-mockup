@@ -1,77 +1,41 @@
+import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Clock, Users, Star, ChevronRight } from 'lucide-react';
+import { Clock, Users, Star, ChevronRight, Loader2 } from 'lucide-react';
+import { supabase } from '@/integrations/supabase/client';
+
+interface Course {
+  id: string;
+  name: string;
+  description: string;
+  duration: string;
+  fees: string;
+}
 
 const Courses = () => {
-  const courses = [
-    {
-      id: 1,
-      title: 'Computer Science & Engineering',
-      description: 'Master the fundamentals of programming, algorithms, data structures, and software engineering. Prepare for careers in tech with hands-on projects and industry partnerships.',
-      duration: '4 Years',
-      students: '2,500+',
-      rating: 4.9,
-      level: 'Undergraduate',
-      category: 'Technology',
-      highlights: ['AI/ML Specialization', 'Industry Projects', 'Research Opportunities'],
-    },
-    {
-      id: 2,
-      title: 'Business Administration',
-      description: 'Develop leadership skills and business acumen through comprehensive study of management, finance, marketing, and strategy. Build your entrepreneurial mindset.',
-      duration: '4 Years',
-      students: '1,800+',
-      rating: 4.8,
-      level: 'Undergraduate',
-      category: 'Business',
-      highlights: ['Startup Incubator', 'Global Internships', 'Leadership Training'],
-    },
-    {
-      id: 3,
-      title: 'Data Science & Analytics',
-      description: 'Learn to extract insights from big data using statistical methods, machine learning, and visualization tools. High-demand field with excellent career prospects.',
-      duration: '2 Years',
-      students: '950+',
-      rating: 4.9,
-      level: 'Graduate',
-      category: 'Technology',
-      highlights: ['Industry Mentorship', 'Real-world Projects', 'Job Guarantee'],
-    },
-    {
-      id: 4,
-      title: 'Mechanical Engineering',
-      description: 'Design, analyze, and manufacture mechanical systems. Focus on sustainable engineering practices and cutting-edge technologies like robotics and automation.',
-      duration: '4 Years',
-      students: '1,200+',
-      rating: 4.7,
-      level: 'Undergraduate',
-      category: 'Engineering',
-      highlights: ['Advanced Labs', 'Industry Collaboration', 'Patent Opportunities'],
-    },
-    {
-      id: 5,
-      title: 'Digital Marketing',
-      description: 'Master modern marketing strategies including social media, SEO, content marketing, and analytics. Perfect for the digital-first business landscape.',
-      duration: '18 Months',
-      students: '650+',
-      rating: 4.8,
-      level: 'Certificate',
-      category: 'Business',
-      highlights: ['Live Campaigns', 'Google Certification', 'Portfolio Building'],
-    },
-    {
-      id: 6,
-      title: 'Cybersecurity',
-      description: 'Protect digital assets and infrastructure from cyber threats. Learn ethical hacking, network security, and compliance in this rapidly growing field.',
-      duration: '2 Years',
-      students: '750+',
-      rating: 4.9,
-      level: 'Graduate',
-      category: 'Technology',
-      highlights: ['Ethical Hacking', 'Security Clearance', 'Industry Certifications'],
-    },
-  ];
+  const [courses, setCourses] = useState<Course[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchCourses = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('courses')
+          .select('*')
+          .order('name');
+        
+        if (error) throw error;
+        setCourses(data || []);
+      } catch (error) {
+        console.error('Error fetching courses:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchCourses();
+  }, []);
 
   const categories = ['All', 'Technology', 'Business', 'Engineering'];
   const levels = ['All', 'Undergraduate', 'Graduate', 'Certificate'];
@@ -120,7 +84,7 @@ const Courses = () => {
               </div>
             </div>
             <div className="text-sm text-muted-foreground">
-              Showing {courses.length} programs
+              {loading ? 'Loading...' : `Showing ${courses.length} programs`}
             </div>
           </div>
         </div>
@@ -129,59 +93,54 @@ const Courses = () => {
       {/* Courses Grid */}
       <section className="py-20 bg-background">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {courses.map((course) => (
-              <Card key={course.id} className="card-elegant border-0 h-full flex flex-col">
-                <CardHeader>
-                  <div className="flex items-start justify-between mb-2">
-                    <Badge variant="secondary">{course.level}</Badge>
-                    <div className="flex items-center space-x-1">
-                      <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
-                      <span className="text-sm font-medium">{course.rating}</span>
-                    </div>
-                  </div>
-                  <CardTitle className="text-xl mb-2">{course.title}</CardTitle>
-                  <Badge variant="outline" className="w-fit">
-                    {course.category}
-                  </Badge>
-                </CardHeader>
-                <CardContent className="flex-1 flex flex-col">
-                  <p className="text-muted-foreground mb-4 flex-1">
-                    {course.description}
-                  </p>
-                  
-                  <div className="space-y-4">
-                    <div className="flex items-center justify-between text-sm">
+          {loading ? (
+            <div className="flex justify-center items-center py-20">
+              <Loader2 className="h-8 w-8 animate-spin" />
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {courses.map((course) => (
+                <Card key={course.id} className="card-elegant border-0 h-full flex flex-col">
+                  <CardHeader>
+                    <div className="flex items-start justify-between mb-2">
+                      <Badge variant="secondary">Course</Badge>
                       <div className="flex items-center space-x-1">
-                        <Clock className="w-4 h-4 text-muted-foreground" />
-                        <span>{course.duration}</span>
-                      </div>
-                      <div className="flex items-center space-x-1">
-                        <Users className="w-4 h-4 text-muted-foreground" />
-                        <span>{course.students}</span>
+                        <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
+                        <span className="text-sm font-medium">4.8</span>
                       </div>
                     </div>
+                    <CardTitle className="text-xl mb-2">{course.name}</CardTitle>
+                    <Badge variant="outline" className="w-fit">
+                      {course.fees}
+                    </Badge>
+                  </CardHeader>
+                  <CardContent className="flex-1 flex flex-col">
+                    <p className="text-muted-foreground mb-4 flex-1">
+                      {course.description}
+                    </p>
                     
-                    <div className="space-y-2">
-                      <h4 className="text-sm font-medium">Program Highlights:</h4>
-                      <div className="flex flex-wrap gap-1">
-                        {course.highlights.map((highlight, index) => (
-                          <Badge key={index} variant="secondary" className="text-xs">
-                            {highlight}
-                          </Badge>
-                        ))}
+                    <div className="space-y-4">
+                      <div className="flex items-center justify-between text-sm">
+                        <div className="flex items-center space-x-1">
+                          <Clock className="w-4 h-4 text-muted-foreground" />
+                          <span>{course.duration}</span>
+                        </div>
+                        <div className="flex items-center space-x-1">
+                          <Users className="w-4 h-4 text-muted-foreground" />
+                          <span>50+ students</span>
+                        </div>
                       </div>
+                      
+                      <Button className="w-full btn-primary mt-auto">
+                        Learn More
+                        <ChevronRight className="ml-2 h-4 w-4" />
+                      </Button>
                     </div>
-                    
-                    <Button className="w-full btn-primary mt-auto">
-                      Learn More
-                      <ChevronRight className="ml-2 h-4 w-4" />
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          )}
         </div>
       </section>
 

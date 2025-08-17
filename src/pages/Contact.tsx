@@ -17,9 +17,11 @@ import {
   Instagram,
   CheckCircle
 } from 'lucide-react';
-import { toast } from '@/hooks/use-toast';
+import { useToast } from '@/hooks/use-toast';
+import { supabase } from '@/integrations/supabase/client';
 
 const Contact = () => {
+  const { toast } = useToast();
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
@@ -80,9 +82,18 @@ const Contact = () => {
 
     setIsSubmitting(true);
 
-    // Simulate form submission (replace with your backend integration)
     try {
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      const { error } = await supabase
+        .from('contacts')
+        .insert([
+          {
+            name: `${formData.firstName} ${formData.lastName}`,
+            email: formData.email,
+            message: `Subject: ${formData.subject}\n\nPhone: ${formData.phone || 'Not provided'}\n\nMessage: ${formData.message}`
+          }
+        ]);
+
+      if (error) throw error;
       
       toast({
         title: "Message Sent Successfully!",
@@ -99,6 +110,7 @@ const Contact = () => {
         message: ''
       });
     } catch (error) {
+      console.error('Error submitting contact form:', error);
       toast({
         title: "Error",
         description: "Failed to send message. Please try again.",

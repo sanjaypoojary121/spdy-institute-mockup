@@ -1,96 +1,41 @@
+import { useState, useEffect } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Mail, Linkedin, BookOpen, Award, Users, ChevronRight } from 'lucide-react';
+import { Mail, Linkedin, BookOpen, Award, Users, ChevronRight, Loader2 } from 'lucide-react';
+import { supabase } from '@/integrations/supabase/client';
 
-import faculty1 from '@/assets/faculty-1.jpg';
-import faculty2 from '@/assets/faculty-2.jpg';
-import faculty3 from '@/assets/faculty-3.jpg';
-import faculty4 from '@/assets/faculty-4.jpg';
-import faculty5 from '@/assets/faculty-5.jpg';
-import faculty6 from '@/assets/faculty-6.jpg';
+interface FacultyMember {
+  id: string;
+  name: string;
+  department: string;
+  bio: string;
+  photo_url: string | null;
+}
 
 const Faculty = () => {
-  const facultyMembers = [
-    {
-      id: 1,
-      name: 'Dr. Michael Anderson',
-      title: 'Professor of Computer Science',
-      department: 'Computer Science & Engineering',
-      image: faculty1,
-      qualifications: ['Ph.D. Computer Science - MIT', 'M.S. Artificial Intelligence - Stanford'],
-      specialization: 'Artificial Intelligence, Machine Learning, Data Science',
-      experience: '15+ years',
-      publications: '120+ publications',
-      awards: ['Excellence in Teaching Award 2023', 'Research Innovation Award 2022'],
-      email: 'm.anderson@spdyinstitute.edu',
-    },
-    {
-      id: 2,
-      name: 'Dr. Sarah Johnson',
-      title: 'Dean of Business School',
-      department: 'Business Administration',
-      image: faculty2,
-      qualifications: ['Ph.D. Business Administration - Harvard', 'MBA Strategy - Wharton'],
-      specialization: 'Strategic Management, Entrepreneurship, Leadership',
-      experience: '20+ years',
-      publications: '85+ publications',
-      awards: ['Dean of the Year 2023', 'Outstanding Faculty Award 2021'],
-      email: 's.johnson@spdyinstitute.edu',
-    },
-    {
-      id: 3,
-      name: 'Dr. Robert Chen',
-      title: 'Professor of Mechanical Engineering',
-      department: 'Mechanical Engineering',
-      image: faculty3,
-      qualifications: ['Ph.D. Mechanical Engineering - Caltech', 'M.S. Robotics - CMU'],
-      specialization: 'Robotics, Automation, Sustainable Engineering',
-      experience: '18+ years',
-      publications: '95+ publications',
-      awards: ['Innovation in Engineering Award 2023', 'Faculty Research Award 2020'],
-      email: 'r.chen@spdyinstitute.edu',
-    },
-    {
-      id: 4,
-      name: 'Dr. Emily Rodriguez',
-      title: 'Associate Professor of Data Science',
-      department: 'Data Science & Analytics',
-      image: faculty4,
-      qualifications: ['Ph.D. Statistics - UC Berkeley', 'M.S. Data Science - NYU'],
-      specialization: 'Big Data Analytics, Statistical Modeling, Predictive Analytics',
-      experience: '12+ years',
-      publications: '70+ publications',
-      awards: ['Young Faculty Excellence Award 2022', 'Best Paper Award 2021'],
-      email: 'e.rodriguez@spdyinstitute.edu',
-    },
-    {
-      id: 5,
-      name: 'Dr. David Wilson',
-      title: 'Professor of Cybersecurity',
-      department: 'Computer Science & Engineering',
-      image: faculty5,
-      qualifications: ['Ph.D. Computer Security - Georgia Tech', 'M.S. Cryptography - MIT'],
-      specialization: 'Network Security, Ethical Hacking, Cryptography',
-      experience: '16+ years',
-      publications: '110+ publications',
-      awards: ['Cybersecurity Excellence Award 2023', 'Industry Collaboration Award 2022'],
-      email: 'd.wilson@spdyinstitute.edu',
-    },
-    {
-      id: 6,
-      name: 'Dr. Lisa Thompson',
-      title: 'Professor of Digital Marketing',
-      department: 'Business Administration',
-      image: faculty6,
-      qualifications: ['Ph.D. Marketing - Northwestern', 'MBA Digital Strategy - INSEAD'],
-      specialization: 'Digital Marketing, Social Media Strategy, Consumer Behavior',
-      experience: '14+ years',
-      publications: '60+ publications',
-      awards: ['Marketing Educator of the Year 2023', 'Digital Innovation Award 2021'],
-      email: 'l.thompson@spdyinstitute.edu',
-    },
-  ];
+  const [facultyMembers, setFacultyMembers] = useState<FacultyMember[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchFaculty = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('faculty')
+          .select('*')
+          .order('name');
+        
+        if (error) throw error;
+        setFacultyMembers(data || []);
+      } catch (error) {
+        console.error('Error fetching faculty:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchFaculty();
+  }, []);
 
   const departments = [
     'All Departments',
@@ -168,7 +113,7 @@ const Faculty = () => {
               ))}
             </div>
             <p className="text-sm text-muted-foreground">
-              Showing {facultyMembers.length} faculty members
+              {loading ? 'Loading...' : `Showing ${facultyMembers.length} faculty members`}
             </p>
           </div>
         </div>
@@ -177,74 +122,55 @@ const Faculty = () => {
       {/* Faculty Grid */}
       <section className="py-20 bg-background">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {facultyMembers.map((faculty) => (
-              <Card key={faculty.id} className="card-elegant border-0 overflow-hidden">
-                <div className="aspect-square overflow-hidden">
-                  <img
-                    src={faculty.image}
-                    alt={faculty.name}
-                    className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
-                  />
-                </div>
-                <CardContent className="p-6">
-                  <div className="mb-4">
-                    <h3 className="text-xl font-bold mb-1">{faculty.name}</h3>
-                    <p className="text-primary font-medium mb-2">{faculty.title}</p>
-                    <Badge variant="secondary" className="text-xs">
-                      {faculty.department}
-                    </Badge>
+          {loading ? (
+            <div className="flex justify-center items-center py-20">
+              <Loader2 className="h-8 w-8 animate-spin" />
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {facultyMembers.map((faculty) => (
+                <Card key={faculty.id} className="card-elegant border-0 overflow-hidden">
+                  <div className="aspect-square overflow-hidden">
+                    <img
+                      src={faculty.photo_url || '/placeholder.svg'}
+                      alt={faculty.name}
+                      className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
+                    />
                   </div>
-
-                  <div className="space-y-3 mb-6">
-                    <div>
-                      <h4 className="text-sm font-semibold mb-1">Specialization:</h4>
-                      <p className="text-sm text-muted-foreground">{faculty.specialization}</p>
+                  <CardContent className="p-6">
+                    <div className="mb-4">
+                      <h3 className="text-xl font-bold mb-1">{faculty.name}</h3>
+                      <Badge variant="secondary" className="text-xs">
+                        {faculty.department}
+                      </Badge>
                     </div>
-                    
-                    <div className="grid grid-cols-2 gap-2 text-sm">
+
+                    <div className="space-y-3 mb-6">
                       <div>
-                        <span className="font-medium">Experience:</span>
-                        <br />
-                        <span className="text-muted-foreground">{faculty.experience}</span>
-                      </div>
-                      <div>
-                        <span className="font-medium">Publications:</span>
-                        <br />
-                        <span className="text-muted-foreground">{faculty.publications}</span>
+                        <h4 className="text-sm font-semibold mb-1">Bio:</h4>
+                        <p className="text-sm text-muted-foreground">{faculty.bio}</p>
                       </div>
                     </div>
 
-                    <div>
-                      <h4 className="text-sm font-semibold mb-1">Recent Awards:</h4>
-                      <div className="space-y-1">
-                        {faculty.awards.slice(0, 2).map((award, index) => (
-                          <Badge key={index} variant="outline" className="text-xs mr-1 mb-1">
-                            {award}
-                          </Badge>
-                        ))}
+                    <div className="flex items-center justify-between">
+                      <div className="flex space-x-2">
+                        <Button variant="outline" size="sm">
+                          <Mail className="w-4 h-4" />
+                        </Button>
+                        <Button variant="outline" size="sm">
+                          <Linkedin className="w-4 h-4" />
+                        </Button>
                       </div>
-                    </div>
-                  </div>
-
-                  <div className="flex items-center justify-between">
-                    <div className="flex space-x-2">
-                      <Button variant="outline" size="sm">
-                        <Mail className="w-4 h-4" />
-                      </Button>
-                      <Button variant="outline" size="sm">
-                        <Linkedin className="w-4 h-4" />
+                      <Button size="sm" className="btn-primary">
+                        View Profile
+                        <ChevronRight className="ml-1 h-3 w-3" />
                       </Button>
                     </div>
-                    <Button size="sm" className="btn-primary">
-                      View Profile
-                      <ChevronRight className="ml-1 h-3 w-3" />
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          )}
         </div>
       </section>
 
