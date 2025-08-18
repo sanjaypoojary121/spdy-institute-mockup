@@ -1,0 +1,78 @@
+// server/prisma/schema.prisma
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+
+model User {
+  id       String @id @default(auto()) @map("_id") @db.ObjectId
+  email    String @unique
+  name     String?
+  password String
+  role     Role     @default(STUDENT)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+enum Role {
+  ADMIN
+  STAFF
+  STUDENT
+}
+
+model Course {
+  id          Int       @id @default(autoincrement())
+  slug        String    @unique
+  title       String
+  summary     String?
+  description String?
+  duration    String?
+  fee         Int?
+  thumbnail   String?
+  instructors InstructorOnCourse[]
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+model Instructor {
+  id          Int       @id @default(autoincrement())
+  name        String
+  title       String?
+  bio         String?
+  avatar      String?
+  socials     Json?
+  courses     InstructorOnCourse[]
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+model InstructorOnCourse {
+  courseId     Int
+  instructorId Int
+  course       Course     @relation(fields: [courseId], references: [id])
+  instructor   Instructor @relation(fields: [instructorId], references: [id])
+  @@id([courseId, instructorId])
+}
+
+model Enquiry {
+  id        Int      @id @default(autoincrement())
+  name      String
+  email     String
+  phone     String?
+  subject   String?
+  message   String
+  courseId  Int?
+  course    Course?  @relation(fields: [courseId], references: [id])
+  createdAt DateTime @default(now())
+}
+
+model Newsletter {
+  id        Int      @id @default(autoincrement())
+  email     String   @unique
+  createdAt DateTime @default(now())
+}
