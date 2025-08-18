@@ -4,6 +4,7 @@ import { BookOpen, Users, Award, Globe, ChevronRight, MessageCircle } from 'luci
 import { Link } from 'react-router-dom';
 import heroImage from '@/assets/hero-bg.jpg';
 import ChatbotWidget from '@/components/ChatbotWidget';
+import NewsCarousel from '@/components/NewsCarousel';
 
 const Home = () => {
   const features = [
@@ -60,12 +61,16 @@ const Home = () => {
             cutting-edge research, and endless opportunities.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center animate-fade-in">
-            <Button size="lg" className="btn-primary text-lg px-8 py-4">
-              Explore Programs
-              <ChevronRight className="ml-2 h-5 w-5" />
+            <Button size="lg" className="btn-primary text-lg px-8 py-4" asChild>
+              <Link to="/programs">
+                Explore Programs
+                <ChevronRight className="ml-2 h-5 w-5" />
+              </Link>
             </Button>
-            <Button variant="outline" size="lg" className="text-lg px-8 py-4 text-white border-white hover:bg-white hover:text-primary">
-              Virtual Tour
+            <Button variant="outline" size="lg" className="text-lg px-8 py-4 text-white border-white hover:bg-white hover:text-primary" asChild>
+              <Link to="/virtual-tour">
+                Virtual Tour
+              </Link>
             </Button>
           </div>
         </div>
@@ -110,6 +115,19 @@ const Home = () => {
               </Card>
             ))}
           </div>
+        </div>
+      </section>
+
+      {/* News & Events Carousel */}
+      <section className="py-20 bg-muted/50">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">Latest News & Events</h2>
+            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+              Stay updated with the latest happenings, achievements, and upcoming events at SPDY Institute.
+            </p>
+          </div>
+          <NewsCarousel />
         </div>
       </section>
 
@@ -202,11 +220,11 @@ const Home = () => {
             Your success story starts here.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button size="lg" variant="secondary" className="text-lg px-8 py-4">
-              Apply Now
+            <Button size="lg" variant="secondary" className="text-lg px-8 py-4" asChild>
+              <Link to="/auth">Apply Now</Link>
             </Button>
-            <Button size="lg" variant="outline" className="text-lg px-8 py-4 text-white border-white hover:bg-white hover:text-primary">
-              Schedule a Visit
+            <Button size="lg" variant="outline" className="text-lg px-8 py-4 text-white border-white hover:bg-white hover:text-primary" asChild>
+              <Link to="/contact">Schedule a Visit</Link>
             </Button>
           </div>
         </div>

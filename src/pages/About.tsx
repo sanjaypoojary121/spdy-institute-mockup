@@ -1,6 +1,7 @@
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Award, Users, Globe, Target, Heart, Lightbulb, ChevronRight } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 const About = () => {
   const values = [
@@ -214,12 +215,14 @@ const About = () => {
             Your journey with SPDY Institute starts today.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button size="lg" className="btn-primary text-lg px-8 py-4">
-              Apply for Admission
-              <ChevronRight className="ml-2 h-5 w-5" />
+            <Button size="lg" className="btn-primary text-lg px-8 py-4" asChild>
+              <Link to="/auth">
+                Apply for Admission
+                <ChevronRight className="ml-2 h-5 w-5" />
+              </Link>
             </Button>
-            <Button size="lg" variant="outline" className="text-lg px-8 py-4">
-              Schedule a Campus Tour
+            <Button size="lg" variant="outline" className="text-lg px-8 py-4" asChild>
+              <Link to="/virtual-tour">Schedule a Campus Tour</Link>
             </Button>
           </div>
         </div>

@@ -98,6 +98,72 @@ export type Database = {
         }
         Relationships: []
       }
+      news_events: {
+        Row: {
+          category: string
+          content: string
+          created_at: string
+          event_date: string | null
+          id: string
+          image_url: string | null
+          is_featured: boolean
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          category?: string
+          content: string
+          created_at?: string
+          event_date?: string | null
+          id?: string
+          image_url?: string | null
+          is_featured?: boolean
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          category?: string
+          content?: string
+          created_at?: string
+          event_date?: string | null
+          id?: string
+          image_url?: string | null
+          is_featured?: boolean
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      program_categories: {
+        Row: {
+          brochure_url: string | null
+          created_at: string
+          description: string
+          icon_name: string
+          id: string
+          name: string
+          updated_at: string
+        }
+        Insert: {
+          brochure_url?: string | null
+          created_at?: string
+          description: string
+          icon_name: string
+          id?: string
+          name: string
+          updated_at?: string
+        }
+        Update: {
+          brochure_url?: string | null
+          created_at?: string
+          description?: string
+          icon_name?: string
+          id?: string
+          name?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
